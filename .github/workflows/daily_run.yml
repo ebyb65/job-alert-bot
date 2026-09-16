@@ -1,0 +1,30 @@
+name: Daily LinkedIn Job Alert
+
+on:
+  schedule:
+    # സൗദി സമയം രാവിലെ 10:30 AM-ന് (UTC 07:30 AM) ദിവസവും തനിയെ റൺ ആകും
+    # (ക്വാട്ട 10:00 AM-ന് റീസെറ്റ് ആയ ഉടൻ)
+    - cron: '30 7 * * *'
+  workflow_dispatch: # വേണമെങ്കിൽ ബട്ടൺ അമർത്തി മാനുവലായും ടെസ്റ്റ് ചെയ്യാം
+
+jobs:
+  run-job-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Job Alert Script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python main.py
