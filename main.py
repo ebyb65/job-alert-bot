@@ -309,4 +309,5 @@ async def run_live_agent():
 
         await asyncio.sleep(6)
 
-await run_live_agent()
+if __name__ == "__main__":
+asyncio.run(run_live_agent())
