@@ -4,19 +4,21 @@ import os
 import re
 import urllib.parse
 from datetime import datetime, timedelta
+import requests
 from bs4 import BeautifulSoup
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
 from google import genai
 from telegram import Bot
 
-GEMINI_API_KEY = "YOUR_ACTUAL_API_KEY".strip()
-TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN".strip()
-TELEGRAM_CHAT_ID = "YOUR_TELEGRAM_CHAT_ID".strip()
+# 1. Environment Secrets Setup
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
+# 2. History Tracking for 5-Day Duplicate Prevention
 HISTORY_FILE = "sent_jobs.json"
 
 def load_sent_jobs():
@@ -33,13 +35,18 @@ def load_sent_jobs():
 def save_sent_job(job_id):
     sent = load_sent_jobs()
     sent[job_id] = datetime.now().isoformat()
-    with open(HISTORY_FILE, "w") as f:
-        json.dump(sent, f)
+    try:
+        with open(HISTORY_FILE, "w") as f:
+            json.dump(sent, f)
+    except Exception:
+        pass
 
+# 3. Extract Job ID for Universal Mobile Links
 def extract_job_id(url):
     match = re.search(r'(\d{8,12})', url)
     return match.group(1) if match else None
 
+# 4. Tailored Complete Word Document (.docx) Generator
 def generate_complete_word_cv(job_title, company, cv_data, filename="Eby_Benjamin_CV.docx"):
     doc = Document()
 
@@ -49,11 +56,9 @@ def generate_complete_word_cv(job_title, company, cv_data, filename="Eby_Benjami
         s.left_margin = Inches(0.6)
         s.right_margin = Inches(0.6)
 
-    # Styling helper
     navy = RGBColor(16, 44, 87)
-    charcoal = RGBColor(50, 50, 50)
 
-    # 1. Header Section
+    # Header
     p_name = doc.add_paragraph()
     r_name = p_name.add_run("EBY BENJAMIN")
     r_name.bold = True
@@ -79,30 +84,29 @@ def generate_complete_word_cv(job_title, company, cv_data, filename="Eby_Benjami
         h.paragraph_format.space_after = Pt(3)
         return h
 
-    # 2. Executive Professional Summary
+    # Section: Professional Summary
     add_section_header("PROFESSIONAL SUMMARY")
     p_sum = doc.add_paragraph(cv_data.get("ats_summary", ""))
     p_sum.runs[0].font.size = Pt(10)
     p_sum.paragraph_format.line_spacing = 1.15
 
-    # 3. Core Competencies
+    # Section: Core Competencies
     add_section_header("CORE EXPERTISE & TECHNICAL COMPETENCIES")
     kw_str = " • ".join(cv_data.get("ats_keywords", []))
     p_kw = doc.add_paragraph(f"Operational Focus: {kw_str}\nKey Domains: End-to-End Mobilization, Saudi Labor Law Compliance, Muqeem/Qiwa/GOSI, Shift Logistics, Camp Administration, ERP Systems.")
     p_kw.runs[0].font.size = Pt(9.5)
     p_kw.paragraph_format.line_spacing = 1.15
 
-    # 4. Tailored Target Contributions
+    # Section: Targeted Strategic Contributions
     add_section_header(f"TAILORED STRATEGIC CONTRIBUTIONS ({company.upper()})")
     for b in cv_data.get("tailored_bullets", []):
         bp = doc.add_paragraph(b, style='List Bullet')
         bp.paragraph_format.line_spacing = 1.15
         bp.runs[0].font.size = Pt(9.5)
 
-    # 5. Career History
+    # Section: Career History
     add_section_header("PROFESSIONAL EXPERIENCE")
     
-    # Job 1
     p_j1 = doc.add_paragraph()
     r1 = p_j1.add_run("Administrative Executive & Workforce Operations Coordinator\n")
     r1.bold = True
@@ -122,7 +126,6 @@ def generate_complete_word_cv(job_title, company, cv_data, filename="Eby_Benjami
         bp.paragraph_format.line_spacing = 1.1
         bp.runs[0].font.size = Pt(9.5)
 
-    # Job 2
     p_j2 = doc.add_paragraph()
     p_j2.paragraph_format.space_before = Pt(6)
     r3 = p_j2.add_run("HR & Operations Support Executive\n")
@@ -142,7 +145,7 @@ def generate_complete_word_cv(job_title, company, cv_data, filename="Eby_Benjami
         bp.paragraph_format.line_spacing = 1.1
         bp.runs[0].font.size = Pt(9.5)
 
-    # 6. Education & Credentials
+    # Section: Education
     add_section_header("EDUCATION & TECHNICAL CREDENTIALS")
     p_edu = doc.add_paragraph("Bachelor's Degree | Advanced ERP & MS Office Workflow Management | Saudi Labor Law & Compliance Frameworks")
     p_edu.runs[0].font.size = Pt(9.5)
@@ -150,6 +153,7 @@ def generate_complete_word_cv(job_title, company, cv_data, filename="Eby_Benjami
     doc.save(filename)
     return filename
 
+# 5. Live LinkedIn Job Retrieval
 def fetch_linkedin_jobs(keywords=["HR Operations", "Workforce Coordinator", "HR Supervisor", "Operations Coordinator"], location="Saudi Arabia", total_limit=15):
     all_jobs = []
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
@@ -192,6 +196,7 @@ def fetch_linkedin_jobs(keywords=["HR Operations", "Workforce Coordinator", "HR 
             pass
     return all_jobs
 
+# 6. Pipeline Execution
 async def run_live_agent():
     bot = Bot(token=TELEGRAM_BOT_TOKEN)
     print("Fetching active jobs from LinkedIn...")
@@ -215,7 +220,7 @@ async def run_live_agent():
         2. Give genuine fit score (0-100).
         3. Identify salary if mentioned, otherwise "Not Disclosed".
         4. Generate 4 critical ATS keywords found in this specific job context.
-        5. Write a completely UNIQUE 3-sentence ATS Professional Summary tailored directly to this vacancy's primary responsibilities. DO NOT USE GENERIC INTROS.
+        5. Write a completely UNIQUE 3-sentence ATS Professional Summary tailored directly to this vacancy's primary responsibilities.
         6. Write 4 distinct bullet points showing how candidate's Plant-Tech Arabia / GCC background directly solves this company's challenges.
         7. Write an authentic, human cover letter (2 paragraphs max) addressing the hiring team directly without robotic AI clichés.
 
@@ -248,11 +253,10 @@ async def run_live_agent():
                 else:
                     print(f"Evaluation failed: {api_err}")
 
-        # Universal app link
         job_id = job.get('job_id')
         app_url = f"https://www.linkedin.com/jobs/view/{job_id}/" if job_id else job['link']
 
-        # Fallback if AI fails or limits out
+        # Fallback manual alert if AI rate-limited or unavailable
         if not data:
             fallback_msg = (
                 f"⚠️ *NEW JOB OPPORTUNITY (Manual Review)*\n\n"
@@ -285,7 +289,6 @@ async def run_live_agent():
 
             await bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=msg, parse_mode="Markdown")
 
-            # Generate full-length tailored CV
             safe_co = "".join(c for c in job['company'] if c.isalnum() or c in (' ', '_')).rstrip()[:12].replace(" ", "_")
             cv_filename = f"Eby_Benjamin_{safe_co}.docx"
             doc_path = generate_complete_word_cv(job['title'], job['company'], data, filename=cv_filename)
@@ -310,4 +313,4 @@ async def run_live_agent():
         await asyncio.sleep(6)
 
 if __name__ == "__main__":
-asyncio.run(run_live_agent())
+    asyncio.run(run_live_agent())
