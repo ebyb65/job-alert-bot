@@ -20,7 +20,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install Dependencies
-        run: pip install -r requirements.txt
+        run: pip install google-genai beautifulsoup4 requests python-telegram-bot python-docx
 
       - name: Run Job Alert Script
         env:
