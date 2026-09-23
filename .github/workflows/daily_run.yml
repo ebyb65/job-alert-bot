@@ -2,10 +2,9 @@ name: Daily LinkedIn Job Alert
 
 on:
   schedule:
-    # സൗദി സമയം രാവിലെ 10:30 AM-ന് (UTC 07:30 AM) ദിവസവും തനിയെ റൺ ആകും
-    # (ക്വാട്ട 10:00 AM-ന് റീസെറ്റ് ആയ ഉടൻ)
-    - cron: '30 7 * * *'
-  workflow_dispatch: # വേണമെങ്കിൽ ബട്ടൺ അമർത്തി മാനുവലായും ടെസ്റ്റ് ചെയ്യാം
+    # 07:00 AM UTC = 10:00 AM Saudi Arabia Time
+    - cron: '0 7 * * *'
+  workflow_dispatch:
 
 jobs:
   run-job-bot:
@@ -20,7 +19,8 @@ jobs:
           python-version: '3.10'
 
       - name: Install Dependencies
-        run: pip install google-genai beautifulsoup4 requests python-telegram-bot python-docx
+        run: |
+          pip install google-genai beautifulsoup4 requests python-telegram-bot python-docx
 
       - name: Run Job Alert Script
         env:
