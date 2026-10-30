@@ -1,0 +1,50 @@
+{
+  "name": "Eby Benjamin",
+  "location": "Jubail, Eastern Province, Saudi Arabia",
+  "mobile": "+966 53 019 3597",
+  "email": "amebybenjamin@gmail.com",
+  "work_authorization": ["Transferable Iqama", "Valid KSA Driving License"],
+  "summary": "Senior HR Operations and Workforce Administration professional with over 13 years of progressive experience across Saudi Arabia and the UAE.",
+  "experience_years": 13,
+  "current_employer": "Plant-Tech Arabia Co. Ltd.",
+  "current_title": "Senior HR Operations & Administration Executive",
+  "verified_experience": [
+    "Lead regional HR operations and employee lifecycle governance for 1,500 permanent staff, expanding to 3,000+ personnel during peak turnaround cycles.",
+    "Direct end-to-end talent acquisition and onboarding transactions, partnering with department heads and IT for workspace, asset and system readiness.",
+    "Manage statutory HR compliance through Qiwa, Muqeem and GOSI, including employment contracts, residency/Iqama renewals, transfers and official letters.",
+    "Administer group medical insurance enrollments, deletions, renewals and claim follow-ups.",
+    "Validate monthly payroll inputs against timesheets, attendance, leave balances and overtime data, resolving discrepancies prior to disbursement.",
+    "Build HR dashboards for headcount, attrition, joiners/leavers and probation review cycles.",
+    "Maintain personnel files and compliance documentation for internal, client and statutory ISO audits.",
+    "Maintain corporate compliance training records and participation metrics.",
+    "Led migration and validation of 2,500+ employee records to Commate ERP.",
+    "Administered recruitment workflows, candidate documentation, pre-employment checks, visa processing, flight bookings and corporate housing logistics.",
+    "Controlled departmental operating expenses, petty cash and coordinated vendor invoices and project timesheets with Finance.",
+    "Maintained confidential employee records, contract expirations, Iqama renewals, leave applications and exit/re-entry visas.",
+    "Managed general office administration, document control, official correspondence and office supply procurement.",
+    "Supported HR operations, attendance tracking, onboarding documentation, visa formalities and vendor coordination in the UAE."
+  ],
+  "systems": ["Commate ERP", "Qiwa", "Muqeem", "GOSI"],
+  "tools": ["Advanced Microsoft Excel", "Microsoft Word", "PowerPoint", "Outlook"],
+  "education": ["Bachelor of Computer Science | University of Kerala, India"],
+  "languages": {
+    "English": "Full Professional",
+    "Hindi": "Full Professional",
+    "Arabic": "Conversational",
+    "Tamil": "Conversational / Spoken",
+    "Malayalam": "Native"
+  },
+  "target_roles": [
+    "Senior HR Executive",
+    "HR Operations Specialist",
+    "HR Officer",
+    "HR Administrator",
+    "HR Coordinator",
+    "Workforce Administration",
+    "Employee Services",
+    "Personnel Administration",
+    "HR & Administration Executive"
+  ],
+  "preferred_locations": ["Dammam", "Khobar", "Al Khobar", "Dhahran", "Jubail", "Eastern Province", "Saudi Arabia"],
+  "minimum_match_score": 78
+}
