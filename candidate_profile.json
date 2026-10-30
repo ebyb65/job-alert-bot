@@ -1,10 +1,8 @@
 {
   "name": "Eby Benjamin",
   "location": "Jubail, Eastern Province, Saudi Arabia",
-  "mobile": "+966 53 019 3597",
-  "email": "amebybenjamin@gmail.com",
   "work_authorization": ["Transferable Iqama", "Valid KSA Driving License"],
-  "summary": "Senior HR Operations and Workforce Administration professional with over 13 years of progressive experience across Saudi Arabia and the UAE.",
+  "summary": "Senior HR Operations, workforce administration and administration professional with over 13 years of progressive experience across Saudi Arabia and the UAE.",
   "experience_years": 13,
   "current_employer": "Plant-Tech Arabia Co. Ltd.",
   "current_title": "Senior HR Operations & Administration Executive",
@@ -27,24 +25,24 @@
   "systems": ["Commate ERP", "Qiwa", "Muqeem", "GOSI"],
   "tools": ["Advanced Microsoft Excel", "Microsoft Word", "PowerPoint", "Outlook"],
   "education": ["Bachelor of Computer Science | University of Kerala, India"],
-  "languages": {
-    "English": "Full Professional",
-    "Hindi": "Full Professional",
-    "Arabic": "Conversational",
-    "Tamil": "Conversational / Spoken",
-    "Malayalam": "Native"
-  },
+  "languages": {"English":"Full Professional","Hindi":"Full Professional","Arabic":"Conversational","Tamil":"Conversational / Spoken","Malayalam":"Native"},
   "target_roles": [
-    "Senior HR Executive",
-    "HR Operations Specialist",
-    "HR Officer",
-    "HR Administrator",
-    "HR Coordinator",
-    "Workforce Administration",
-    "Employee Services",
-    "Personnel Administration",
-    "HR & Administration Executive"
+    "Senior HR Executive", "HR Operations Specialist", "HR Specialist", "HR Officer", "HR Administrator", "HR Coordinator",
+    "HR & Administration Executive", "Administration Executive", "Administrative Executive", "Senior Administrator", "Office Administrator",
+    "Workforce Administration", "Workforce Coordinator", "Manpower Coordinator", "Personnel Administration", "Personnel Officer",
+    "Employee Services", "Employee Relations Coordinator", "Onboarding Specialist", "Onboarding Coordinator", "Mobilization Coordinator",
+    "Recruitment Coordinator", "Talent Acquisition Coordinator", "HR Shared Services", "Payroll Coordinator", "Timekeeping Coordinator",
+    "Project Administrator", "Project Coordinator", "Operations Administrator", "Operations Coordinator", "Document Control Administrator"
   ],
   "preferred_locations": ["Dammam", "Khobar", "Al Khobar", "Dhahran", "Jubail", "Eastern Province", "Saudi Arabia"],
+  "compensation_preferences": {
+    "eastern_province_min_basic_sar": 5500,
+    "eastern_province_min_total_sar": 7500,
+    "relocation_min_total_sar_exclusive": 8000,
+    "junior_role_min_total_sar": 8000,
+    "industry_restriction": null,
+    "undisclosed_salary_policy": "keep_and_flag_for_verification",
+    "unclear_salary_type_policy": "do_not_assume_basic_or_total"
+  },
   "minimum_match_score": 78
 }
