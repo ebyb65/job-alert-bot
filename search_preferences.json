@@ -1,0 +1,13 @@
+{
+  "target_roles": ["HR Operations", "HR Administration", "Workforce Administration", "Personnel Administration", "Employee Services", "Onboarding", "Mobilization Coordinator", "Recruitment Coordinator", "Payroll Coordinator", "Timekeeping Coordinator", "Administration Executive", "Administrative Coordinator", "Office Administrator", "Project Administrator", "Operations Coordinator"],
+  "preferred_locations": ["Dammam", "Khobar", "Dhahran", "Jubail", "Eastern Province"],
+  "salary_policy": {
+    "local_min_basic_sar": 5500,
+    "local_min_total_sar": 7500,
+    "relocation_min_total_sar": 8000,
+    "junior_min_total_sar": 8000,
+    "allow_undisclosed_salary": true,
+    "industries": "any"
+  },
+  "minimum_match_score": 78
+}
