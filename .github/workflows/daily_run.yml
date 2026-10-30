@@ -1,6 +1,8 @@
 name: Daily Job Search Agent
 
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: '17 9 * * *'
       timezone: 'Asia/Riyadh'
@@ -26,6 +28,8 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
       - run: pip install -r requirements.txt
+      - name: Compile check
+        run: python -m py_compile runner.py job_sources.py
       - name: Run multi-source matcher
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
