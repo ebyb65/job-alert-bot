@@ -16,7 +16,7 @@ concurrency:
 jobs:
   run-job-bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -33,16 +33,17 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run job search and ATS matching
+      - name: Run multi-source job search and ATS matching
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-2.5-flash' }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          JOB_SOURCES: 'linkedin,indeed,naukrigulf,bayt,gulftalent'
           MIN_MATCH_SCORE: '78'
           HISTORY_LOOKBACK_DAYS: '30'
-          MAX_JOBS: '30'
-        run: python main.py
+          MAX_JOBS: '50'
+        run: python runner.py
 
       - name: Persist duplicate history
         if: always()
