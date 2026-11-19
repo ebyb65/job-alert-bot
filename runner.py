@@ -26,7 +26,7 @@ MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 API = os.getenv("GEMINI_API_KEY", "")
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 CHAT = os.getenv("TELEGRAM_CHAT_ID", "")
-FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-flash-latest")
+FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "")
 client = genai.Client(api_key=API, http_options={"timeout": 60000}) if API else None
 START = time.time()
 AI_DOWN_STREAK = 0
@@ -180,7 +180,7 @@ def ai_review(job):
         return None
     vacancy = {k: job[k] for k in ("title", "company", "location", "description")}
     vacancy["description"] = vacancy["description"][:9000]
-    for model in dict.fromkeys([MODEL, FALLBACK_MODEL]):
+    for model in [m for m in dict.fromkeys([MODEL, FALLBACK_MODEL]) if m]:
         try:
             r = client.models.generate_content(model=model, contents=PROMPT + json.dumps(vacancy, ensure_ascii=False),
                                                config={"response_mime_type": "application/json", "temperature": 0})
