@@ -26,7 +26,10 @@ MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 API = os.getenv("GEMINI_API_KEY", "")
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 CHAT = os.getenv("TELEGRAM_CHAT_ID", "")
-client = genai.Client(api_key=API) if API else None
+FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-flash-latest")
+client = genai.Client(api_key=API, http_options={"timeout": 60000}) if API else None
+START = time.time()
+AI_DOWN_STREAK = 0
 
 
 # ---- history -------------------------------------------------------------
@@ -171,18 +174,22 @@ VACANCY:
 
 
 def ai_review(job):
-    if not client:
+    """Ask Gemini; on overload try the fallback model. After 3 jobs in a row fail, stop calling the AI this run."""
+    global AI_DOWN_STREAK
+    if not client or AI_DOWN_STREAK >= 3:
         return None
     vacancy = {k: job[k] for k in ("title", "company", "location", "description")}
     vacancy["description"] = vacancy["description"][:9000]
-    for attempt in range(3):
+    for model in dict.fromkeys([MODEL, FALLBACK_MODEL]):
         try:
-            r = client.models.generate_content(model=MODEL, contents=PROMPT + json.dumps(vacancy, ensure_ascii=False),
+            r = client.models.generate_content(model=model, contents=PROMPT + json.dumps(vacancy, ensure_ascii=False),
                                                config={"response_mime_type": "application/json", "temperature": 0})
+            AI_DOWN_STREAK = 0
             return json.loads(r.text)
         except Exception as e:
-            print(f"AI attempt {attempt + 1}: {e}")
-            time.sleep(5 * (attempt + 1))
+            print(f"AI ({model}): {str(e)[:160]}")
+            time.sleep(4)
+    AI_DOWN_STREAK += 1
     return None
 
 
@@ -197,6 +204,16 @@ def accept(a):
 
 
 # ---- main ----------------------------------------------------------------
+async def send_alert(bot, score, j, a, sal_note):
+    evidence = "\n".join("• " + e for e in a.get("evidence", [])[:3])
+    gaps = "; ".join(a.get("gaps", [])[:3]) or "None significant"
+    msg = (f"🎯 {score}% MATCH — {a.get('recommendation', 'Apply')}\n"
+           f"{j['title']}\n🏢 {j['company']}\n📍 {j['location']}   🔎 {j['source']}\n💰 {sal_note}\n\n"
+           f"Why: {a.get('reason', '')}\n{evidence}\n\n⚠️ Gaps: {gaps}\n\n👉 {j['link']}")
+    await bot.send_message(chat_id=CHAT, text=msg, disable_web_page_preview=True)
+
+
+
 async def run():
     if not TOKEN or not CHAT:
         raise RuntimeError("Telegram secrets are required")
@@ -222,9 +239,13 @@ async def run():
         print(f"{len(candidates)} jobs passed the title/location gate")
 
         verified, unverified, ai_calls = [], [], 0
+        budget = PREFS.get("time_budget_minutes", 20) * 60
         for j in candidates:
-            if ai_calls >= PREFS["max_ai_evaluations_per_run"]:
-                break  # the rest stay unmarked and will be checked next run
+            if ai_calls >= PREFS["max_ai_evaluations_per_run"] or time.time() - START > budget or AI_DOWN_STREAK >= 3:
+                print("Stopping early (AI cap or time budget); remaining jobs are checked next run")
+                break
+            if len(verified) >= PREFS["max_alerts_per_run"]:
+                break
             if len(j.get("description", "")) < 250:
                 j["description"] = fetch_description(j)
                 time.sleep(1)
@@ -252,21 +273,12 @@ async def run():
             good, score = accept(a)
             print(f"  {'✓' if good else '✗'} {score:>3}% {j['title']} | {j['company']} — {a.get('reason', '')}")
             if good:
-                verified.append((score, j, a, sal_note))
+                verified.append(j)
+                await send_alert(bot, score, j, a, sal_note)
+                hist[j["history_id"]] = now()
             else:
                 stats["AI rejected"] += 1
                 hist[j["history_id"]] = now()
-
-        verified.sort(key=lambda x: -x[0])
-        for score, j, a, sal_note in verified[:PREFS["max_alerts_per_run"]]:
-            evidence = "\n".join("• " + e for e in a.get("evidence", [])[:3])
-            gaps = "; ".join(a.get("gaps", [])[:3]) or "None significant"
-            msg = (f"🎯 {score}% MATCH — {a.get('recommendation', 'Apply')}\n"
-                   f"{j['title']}\n🏢 {j['company']}\n📍 {j['location']}   🔎 {j['source']}\n💰 {sal_note}\n\n"
-                   f"Why: {a.get('reason', '')}\n{evidence}\n\n⚠️ Gaps: {gaps}\n\n👉 {j['link']}")
-            await bot.send_message(chat_id=CHAT, text=msg, disable_web_page_preview=True)
-            hist[j["history_id"]] = now()
-            await asyncio.sleep(1)
 
         for j in unverified[:3]:
             await bot.send_message(chat_id=CHAT, disable_web_page_preview=True,
@@ -277,7 +289,7 @@ async def run():
         if not verified:
             note = "No new jobs matching your profile today."
             if stats["AI unavailable"]:
-                note += f"\n({stats['AI unavailable']} jobs couldn't be AI-checked — they'll be retried tomorrow.)"
+                note += "\n(Google's AI was busy, so some jobs couldn't be checked — they'll be retried next run.)"
             await bot.send_message(chat_id=CHAT, text=note)
     finally:
         save_history(hist)

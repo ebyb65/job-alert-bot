@@ -52,8 +52,10 @@
   },
 
   "minimum_match_score": 80,
-  "max_ai_evaluations_per_run": 40,
+  "max_ai_evaluations_per_run": 30,
   "max_alerts_per_run": 8,
   "send_unverified": false,
-  "sources": {"linkedin": true, "indeed": true, "naukrigulf": true, "bayt": true, "gulftalent": true}
+  "_sources_note": "Indeed, Bayt and GulfTalent return 403 and Naukrigulf times out from GitHub servers, so they are off.",
+  "sources": {"linkedin": true, "indeed": false, "naukrigulf": false, "bayt": false, "gulftalent": false},
+  "time_budget_minutes": 20
 }

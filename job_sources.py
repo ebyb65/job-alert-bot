@@ -30,10 +30,15 @@ def make_job(source, title, company, location, link, description="", posted=""):
             "history_id": source + ":" + hashlib.sha256(link.encode()).hexdigest()[:18]}
 
 
-def get(url):
-    r = SESSION.get(url, timeout=18)
-    r.raise_for_status()
-    return r.text
+def get(url, retries=1):
+    """GET with one polite retry when the site says 'too many requests'."""
+    for attempt in range(retries + 1):
+        r = SESSION.get(url, timeout=15)
+        if r.status_code == 429 and attempt < retries:
+            time.sleep(12)
+            continue
+        r.raise_for_status()
+        return r.text
 
 
 def walk_json(obj):
@@ -87,6 +92,7 @@ def fetch_description(job):
                     return clean(str(node)) + (" | " + crit if crit else "")
             except Exception as e:
                 print("LinkedIn JD:", e)
+        return ""  # LinkedIn's normal job page needs login; no point trying it
     try:
         html = get(link)
     except Exception as e:
@@ -117,7 +123,7 @@ def linkedin(q, loc):
         lo = c.find("span", class_="job-search-card__location")
         if t and a:
             out.append(make_job("LinkedIn", t.get_text(), co.get_text() if co else "", lo.get_text() if lo else loc, a.get("href", "")))
-    time.sleep(1.5)  # be gentle; LinkedIn returns 429 if hammered
+    time.sleep(3)  # be gentle; LinkedIn returns 429 if hammered
     return out
 
 
