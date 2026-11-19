@@ -1,13 +1,59 @@
 {
-  "target_roles": ["HR Operations", "HR Administration", "Workforce Administration", "Personnel Administration", "Employee Services", "Onboarding", "Mobilization Coordinator", "Recruitment Coordinator", "Payroll Coordinator", "Timekeeping Coordinator", "Administration Executive", "Administrative Coordinator", "Office Administrator", "Project Administrator", "Operations Coordinator"],
-  "preferred_locations": ["Dammam", "Khobar", "Dhahran", "Jubail", "Eastern Province"],
+  "_help": "Edit this file to tune the bot. Title/description lists are case-insensitive regular expressions matched on whole words.",
+
+  "search_queries": [
+    "HR Operations",
+    "HR Coordinator",
+    "HR Officer",
+    "HR Supervisor",
+    "HR Generalist",
+    "HR Administration",
+    "HR and Admin",
+    "Personnel Administration",
+    "Workforce Mobilization",
+    "Recruitment Specialist",
+    "Talent Acquisition",
+    "Administration Supervisor",
+    "Project Administrator"
+  ],
+  "search_locations": ["Eastern Province, Saudi Arabia", "Riyadh, Saudi Arabia"],
+
+  "local_locations": ["Jubail", "Dammam", "Khobar", "Dhahran", "Eastern Province", "Eastern Region", "Ash Sharqiyah", "Sharqia", "Qatif", "Saihat", "Ras Tanura", "Ras Al Khair", "Abqaiq", "Hofuf", "Al Ahsa"],
+  "relocation_locations": ["Riyadh"],
+
+  "title_must_match_any": [
+    "hr", "hrbp", "hris", "h\\.r\\.", "human resources?", "personnel", "people operations", "workforce", "manpower",
+    "mobili[sz]ation", "global mobility", "onboarding", "recruit\\w*", "talent acquisition",
+    "employee relations", "employee services", "admin", "administration", "administrative",
+    "administrator", "office manager", "timekeep\\w*"
+  ],
+  "title_reject_any": [
+    "sales", "marketing", "business development", "engineer\\w*", "technician", "developer", "software",
+    "system(s)? administrator", "network administrator", "database administrator", "it", "sap", "oracle", "erp consultant",
+    "nurse", "doctor", "physician", "pharmac\\w*", "medical", "clinical", "teacher", "lecturer", "tutor",
+    "driver", "accountant", "accounting", "finance", "auditor", "cashier", "customer", "client", "call cent(er|re)",
+    "chef", "cook", "waiter", "security guard", "receptionist", "secretary", "data entry", "assistant(?! (hr |human resources? |admin\\w* )?manager)",
+    "intern", "internship", "trainee", "graduate", "tamheer", "female", "ladies", "women",
+    "director", "head of", "chief", "vice president", "vp",
+    "logistics", "warehouse", "procurement", "purchasing", "supply chain", "store ?keeper", "planner",
+    "qa", "qc", "hse", "safety", "legal", "lawyer", "real estate", "leasing", "property",
+    "saudi(s)? only", "saudi nationals?", "for saudis?", "\\(saudi\\)", "سعودي\\w*"
+  ],
+  "description_reject_any": [
+    "saudi nationals? only", "saudis only", "only saudi\\w*", "saudi citizens? only", "for saudi nationals?",
+    "must be (a )?saudi( national)?", "saudi nationality (is )?(required|mandatory|only)", "tamheer",
+    "female (candidates? )?only", "ladies only", "women only", "fresh graduates?"
+  ],
+
   "salary_policy": {
     "local_min_basic_sar": 5500,
     "local_min_total_sar": 7500,
-    "relocation_min_total_sar": 8000,
-    "junior_min_total_sar": 8000,
-    "allow_undisclosed_salary": true,
-    "industries": "any"
+    "relocation_min_total_sar": 8000
   },
-  "minimum_match_score": 78
+
+  "minimum_match_score": 80,
+  "max_ai_evaluations_per_run": 40,
+  "max_alerts_per_run": 8,
+  "send_unverified": false,
+  "sources": {"linkedin": true, "indeed": true, "naukrigulf": true, "bayt": true, "gulftalent": true}
 }
